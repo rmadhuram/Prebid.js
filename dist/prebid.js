@@ -1,5 +1,5 @@
 /* Prebid.js v0.4.0 
-Updated : 2015-10-28 */
+Updated : 2015-11-27 */
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /** @module adaptermanger */
 
@@ -10,6 +10,7 @@ var PubmaticAdapter = require('./adapters/pubmatic.js');
 var CriteoAdapter = require('./adapters/criteo');
 var YieldbotAdapter = require('./adapters/yieldbot');
 var Casale = require('./adapters/casale');
+var C1X = require('./adapters/c1x');
 var bidmanager = require('./bidmanager.js');
 var utils = require('./utils.js');
 var CONSTANTS = require('./constants.json');
@@ -56,7 +57,9 @@ this.registerBidAdapter(PubmaticAdapter(), 'pubmatic');
 this.registerBidAdapter(CriteoAdapter(), 'criteo');
 this.registerBidAdapter(YieldbotAdapter(), 'yieldbot');
 this.registerBidAdapter(Casale(), 'casale');
-},{"./adapters/appnexus.js":2,"./adapters/casale":3,"./adapters/criteo":4,"./adapters/openx":5,"./adapters/pubmatic.js":6,"./adapters/rubicon.js":7,"./adapters/yieldbot":8,"./bidmanager.js":11,"./constants.json":12,"./utils.js":14}],2:[function(require,module,exports){
+this.registerBidAdapter(C1X(), 'c1x');
+
+},{"./adapters/appnexus.js":2,"./adapters/c1x":3,"./adapters/casale":4,"./adapters/criteo":5,"./adapters/openx":6,"./adapters/pubmatic.js":7,"./adapters/rubicon.js":8,"./adapters/yieldbot":9,"./bidmanager.js":12,"./constants.json":13,"./utils.js":15}],2:[function(require,module,exports){
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
 var adloader = require('../adloader.js');
@@ -289,7 +292,67 @@ var AppNexusAdapter = function AppNexusAdapter() {
 	};
 };
 module.exports = AppNexusAdapter;
-},{"../adloader.js":9,"../bidfactory.js":10,"../bidmanager.js":11,"../constants.json":12,"../utils.js":14}],3:[function(require,module,exports){
+},{"../adloader.js":10,"../bidfactory.js":11,"../bidmanager.js":12,"../constants.json":13,"../utils.js":15}],3:[function(require,module,exports){
+var CONSTANTS = require('../constants.json');
+var utils = require('../utils.js');
+var bidfactory = require('../bidfactory.js');
+var bidmanager = require('../bidmanager.js');
+var adloader = require('../adloader');
+
+/**
+ * Adapter for requesting bids from C1X header tag server.
+ *
+ * @param {Object} options - Configuration options for C1X
+ *
+ * @returns {{callBids: _callBids}}
+ * @constructor
+ */
+var C1XAdapter = function C1XAdapter() {
+
+    function _callBids(params){
+      window.console.log('Sending bids');
+      window.console.log(params);
+      var adUnitCode = params.bids[0].placementCode,
+        scriptUrl = 'c1x-mock-bidder.js';
+
+      window._c1xResponse = function(data) {
+        console.log('calling bid response with data: ', data);
+        var bidObject = bidfactory.createBid(1);
+        bidObject.bidderCode = 'c1x';
+        bidObject.cpm = data.cpm;
+        bidObject.ad = data.ad;
+        bidObject.width = data.width;
+        bidObject.height = data.height;
+
+        //send the bidResponse object to bid manager with the adUnitCode.
+        bidmanager.addBidResponse(adUnitCode, bidObject);
+      }
+
+      adloader.loadScript(scriptUrl);
+
+      /*
+      setTimeout(function() {
+        var bidObject = bidfactory.createBid(1);
+        bidObject.bidderCode = 'c1x';
+        bidObject.cpm = 1.50;
+        bidObject.ad = '<div><img src="http://c1x.s3.amazonaws.com/ads/house/banner300x250/c1x-ad2.jpg"></div>';
+        bidObject.width = 300;
+        bidObject.height = 250;
+
+        //send the bidResponse object to bid manager with the adUnitCode.
+        bidmanager.addBidResponse(adUnitCode, bidObject);
+      }, 300); */
+    }
+
+    // Export the callBids function, so that prebid.js can execute this function
+    // when the page asks to send out bid requests.
+    return {
+        callBids: _callBids
+    };
+};
+
+module.exports = C1XAdapter;
+},{"../adloader":10,"../bidfactory.js":11,"../bidmanager.js":12,"../constants.json":13,"../utils.js":15}],4:[function(require,module,exports){
 //Factory for creating the bidderAdaptor
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
@@ -423,7 +486,7 @@ var CasaleAdapter = function CasaleAdapter() {
 };
 
 module.exports = CasaleAdapter;
-},{"../bidfactory.js":10,"../bidmanager.js":11,"../constants.json":12,"../utils.js":14}],4:[function(require,module,exports){
+},{"../bidfactory.js":11,"../bidmanager.js":12,"../constants.json":13,"../utils.js":15}],5:[function(require,module,exports){
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
 var bidfactory = require('../bidfactory.js');
@@ -498,7 +561,7 @@ var CriteoAdapter = function CriteoAdapter() {
 };
 
 module.exports = CriteoAdapter;
-},{"../adloader":9,"../bidfactory.js":10,"../bidmanager.js":11,"../constants.json":12,"../utils.js":14}],5:[function(require,module,exports){
+},{"../adloader":10,"../bidfactory.js":11,"../bidmanager.js":12,"../constants.json":13,"../utils.js":15}],6:[function(require,module,exports){
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
 var bidfactory = require('../bidfactory.js');
@@ -605,12 +668,29 @@ var OpenxAdapter = function OpenxAdapter(options) {
 };
 
 module.exports = OpenxAdapter;
-},{"../adloader":9,"../bidfactory.js":10,"../bidmanager.js":11,"../constants.json":12,"../utils.js":14}],6:[function(require,module,exports){
+},{"../adloader":10,"../bidfactory.js":11,"../bidmanager.js":12,"../constants.json":13,"../utils.js":15}],7:[function(require,module,exports){
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
 var bidfactory = require('../bidfactory.js');
 var bidmanager = require('../bidmanager.js');
 var adloader = require('../adloader');
+
+
+var bidfactory = require('../bidfactory.js');
+var bidmanager = require('../bidmanager.js');
+
+var BidderNameAdapter = function BidderNameAdapter() {
+
+    function _callBids(params){}
+
+    // Export the callBids function, so that prebid.js can execute this function
+    // when the page asks to send out bid requests.
+    return {
+        callBids: _callBids
+    };
+};
+
+module.exports = BidderNameAdapter;
 
 /**
  * Adapter for requesting bids from Pubmatic.
@@ -730,7 +810,7 @@ var PubmaticAdapter = function PubmaticAdapter() {
 };
 
 module.exports = PubmaticAdapter;
-},{"../adloader":9,"../bidfactory.js":10,"../bidmanager.js":11,"../constants.json":12,"../utils.js":14}],7:[function(require,module,exports){
+},{"../adloader":10,"../bidfactory.js":11,"../bidmanager.js":12,"../constants.json":13,"../utils.js":15}],8:[function(require,module,exports){
 //Factory for creating the bidderAdaptor
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
@@ -905,7 +985,7 @@ var RubiconAdapter = function RubiconAdapter() {
 
 module.exports = RubiconAdapter;
 
-},{"../bidfactory.js":10,"../bidmanager.js":11,"../constants.json":12,"../utils.js":14}],8:[function(require,module,exports){
+},{"../bidfactory.js":11,"../bidmanager.js":12,"../constants.json":13,"../utils.js":15}],9:[function(require,module,exports){
 /**
  * @overview Yieldbot sponsored Prebid.js adapter.
  * @author elljoh
@@ -1053,13 +1133,14 @@ var YieldbotAdapter = function YieldbotAdapter() {
 
 module.exports = YieldbotAdapter;
 
-},{"../adloader":9,"../bidfactory":10,"../bidmanager":11,"../utils":14}],9:[function(require,module,exports){
+},{"../adloader":10,"../bidfactory":11,"../bidmanager":12,"../utils":15}],10:[function(require,module,exports){
 //add a script tag to the page, used to add /jpt call to page
 exports.loadScript = function(tagSrc, callback) {
 	//create a script tag for the jpt call
 	var jptScript = document.createElement('script');
 	jptScript.type = 'text/javascript';
 	jptScript.async = true;
+
 
 	// Execute a callback if necessary
 	if (callback && typeof callback === "function") {
@@ -1109,7 +1190,7 @@ exports.trackPixel = function(pixelUrl) {
 
 	}
 };
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var utils = require('./utils.js');
 
 /**
@@ -1169,7 +1250,7 @@ exports.createBid = function(statusCde) {
 };
 
 //module.exports = Bid;
-},{"./utils.js":14}],11:[function(require,module,exports){
+},{"./utils.js":15}],12:[function(require,module,exports){
 var CONSTANTS = require('./constants.json');
 var utils = require('./utils.js');
 
@@ -1558,7 +1639,7 @@ exports.addCallback = function(id, callback, cbEvent){
 	}
 };
 
-},{"./constants.json":12,"./utils.js":14}],12:[function(require,module,exports){
+},{"./constants.json":13,"./utils.js":15}],13:[function(require,module,exports){
 module.exports={
 	"JSON_MAPPING": {
 		"PL_CODE": "code",
@@ -1588,7 +1669,7 @@ module.exports={
 	"objectType_number" : "number"
 }
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /** @module pbjs */
 // if pbjs already exists in global dodcument scope, use it, if not, create the object
 window.pbjs = (window.pbjs || {});
@@ -1785,60 +1866,20 @@ function getWinningBid(bidArray) {
 }
 
 
-function setGPTAsyncTargeting(code, slot, adUnitBids) {
-	var bidArrayTargeting = [];
-	if (adUnitBids && adUnitBids.bids.length !== 0) {
-		for (var i = 0; i < adUnitBids.bids.length; i++) {
-			var bid = adUnitBids.bids[i];
-			//if use the generic key push into array with CPM for sorting
-			if (!bid.alwaysUseBid) {
-				bidArrayTargeting.push({
-					cpm: bid.cpm,
-					bid: bid
-				});
-			}
-			// alwaysUseBid = true - send the bid anyway
-			else {
-				var keyStrings = adUnitBids.bids[i].adserverTargeting;
-				for (var key in keyStrings) {
-					if (keyStrings.hasOwnProperty(key)) {
-						try {
-							utils.logMessage('Attempting to set key value for slot: ' + slot.getSlotElementId() + ' key: ' + key + ' value: ' + encodeURIComponent(keyStrings[key]));
-							//clear gpt targeting for slot then set
-							//googletag.pubads().clearTargeting(code);
-							slot.clearTargeting();
-							slot.setTargeting(key, encodeURIComponent(keyStrings[key]));
+function setGPTAsyncTargeting(code, slot) {
+	//get the targeting that is already configured
+	var keyStrings = getTargetingfromGPTIdentifier(slot);
+	slot.clearTargeting();
+	for (var key in keyStrings) {
+		if (keyStrings.hasOwnProperty(key)) {
+			try {
+				utils.logMessage('Attempting to set key value for slot: ' + slot.getSlotElementId() + ' key: ' + key + ' value: ' + encodeURIComponent(keyStrings[key]));
+				slot.setTargeting(key, encodeURIComponent(keyStrings[key]));
 
-						} catch (e) {
-							utils.logMessage('Problem setting key value pairs in slot: ' + e.message);
-						}
-					}
-				}
-			}
-
-
-		}
-
-	} else {
-		utils.logMessage('No bids eligble for adUnit code : ' + code);
-	}
-	//set generic key targeting here
-	if (bidArrayTargeting.length !== 0) {
-
-		var winningBid = getWinningBid(bidArrayTargeting);
-		var keyValues = winningBid.adserverTargeting;
-		for (var key in keyValues) {
-			if (keyValues.hasOwnProperty(key)) {
-				try {
-					utils.logMessage('Attempting to set key value for slot: '  + slot.getSlotElementId() + ' key: ' + key + ' value: ' + encodeURIComponent(keyValues[key]));
-					slot.setTargeting(key, encodeURIComponent(keyValues[key]));
-
-				} catch (e) {
-					utils.logMessage('Problem setting key value pairs in slot: ' + e.message);
-				}
+			} catch (e) {
+				utils.logMessage('Problem setting key value pairs in slot: ' + e.message);
 			}
 		}
-
 	}
 }
 /*
@@ -2053,7 +2094,7 @@ pbjs.setTargetingForAdUnitsGPTAsync = function(codeArr) {
 
 				if (slots[k].getSlotElementId() === code || slots[k].getAdUnitPath() === code) {
 					placementBids = getBidResponsesByAdUnit(code);
-					setGPTAsyncTargeting(code, slots[k], placementBids);
+					setGPTAsyncTargeting(code, slots[k]);
 				}
 			}
 		}
@@ -2063,8 +2104,8 @@ pbjs.setTargetingForAdUnitsGPTAsync = function(codeArr) {
 		for (i = 0; i < slots.length; i++) {
 			var adUnitCode = slots[i].getSlotElementId();
 			if (adUnitCode) {
-				placementBids = getBidsFromGTPIdentifier(slots[i]);
-				setGPTAsyncTargeting(adUnitCode, slots[i], placementBids);
+				//placementBids = getBidsFromGTPIdentifier(slots[i]);
+				setGPTAsyncTargeting(adUnitCode, slots[i]);
 			}
 		}
 	}
@@ -2075,17 +2116,17 @@ pbjs.setTargetingForAdUnitsGPTAsync = function(codeArr) {
  * @param  {[type]} slot [description]
  * @return {[type]}      [description]
  */
-function getBidsFromGTPIdentifier(slot){
-	var bids = null;
+function getTargetingfromGPTIdentifier(slot){
+	var targeting = null;
 	if(slot){
 		//first get by elementId
-		bids =  getBidResponsesByAdUnit(slot.getSlotElementId());
+		targeting =  pbjs.getAdserverTargetingForAdUnitCode(slot.getSlotElementId());
 		//if not available, try by adUnitPath
-		if(!bids){
-			bids = getBidResponsesByAdUnit(slot.getAdUnitPath());
+		if(!targeting){
+			targeting = pbjs.getAdserverTargetingForAdUnitCode(slot.getAdUnitPath());
 		}
 	}
-	return bids;
+	return targeting;
 }
 
 /**
@@ -2197,7 +2238,7 @@ pbjs.removeAdUnit = function(adUnitCode) {
 	if (adUnitCode) {
 		for (var i = 0; i < pbjs.adUnits.length; i++) {
 			if (pbjs.adUnits[i].code === adUnitCode) {
-				pbjs.adUnits = pbjs.adUnits.splice(i, 1);
+				pbjs.adUnits.splice(i, 1);
 			}
 		}
 	}
@@ -2377,7 +2418,7 @@ pbjs_testonly = {};
 pbjs_testonly.getAdUnits = function() {
     return pbjs.adUnits;
 };
-},{"./adaptermanager":1,"./adloader":9,"./bidfactory":10,"./bidmanager.js":11,"./constants.json":12,"./utils.js":14}],14:[function(require,module,exports){
+},{"./adaptermanager":1,"./adloader":10,"./bidfactory":11,"./bidmanager.js":12,"./constants.json":13,"./utils.js":15}],15:[function(require,module,exports){
 var CONSTANTS = require('./constants.json');
 var objectType_function = 'function';
 var objectType_undefined = 'undefined';
@@ -2772,4 +2813,4 @@ exports._each = function(object, fn) {
     }
   };
 
-},{"./constants.json":12}]},{},[13])
+},{"./constants.json":13}]},{},[14])

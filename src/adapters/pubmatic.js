@@ -4,6 +4,23 @@ var bidfactory = require('../bidfactory.js');
 var bidmanager = require('../bidmanager.js');
 var adloader = require('../adloader');
 
+
+var bidfactory = require('../bidfactory.js');
+var bidmanager = require('../bidmanager.js');
+
+var BidderNameAdapter = function BidderNameAdapter() {
+
+    function _callBids(params){}
+
+    // Export the callBids function, so that prebid.js can execute this function
+    // when the page asks to send out bid requests.
+    return {
+        callBids: _callBids
+    };
+};
+
+module.exports = BidderNameAdapter;
+
 /**
  * Adapter for requesting bids from Pubmatic.
  *
