@@ -54,74 +54,27 @@
         */
 	   var adUnits = [{
         code: 'div-gpt-ad-1446192128868-0',
-        sizes: [[300, 250], [300, 600]],
+        sizes: [[300, 250]],
         bids: [
            {
-                bidder: 'c1x',
-                params: {
-                   placementId: 'TO ADD'
-                }
-            },
-            // 1 ad unit can be targeted by multiple bids.
-            {
-                bidder: 'appnexus',
-                params: {
-                   placementId: 'TO ADD'
-                }
-            },
-            // 1 ad unit can also be targeted by multiple bids from 1 bidder
-           {
-                bidder: 'pubmatic',
-                params: {
-                    publisherId: 'TO ADD',
-                    adSlot: 'TO ADD@300x250'
-                }
-            }, {
-                bidder: 'pubmatic',
-                params: {
-                    publisherId: 'TO ADD',
-                    adSlot: 'TO ADD@300x600'
-                }
-            }, {
-                bidder: 'criteo',
-                params: {
-                    nid: "TO ADD",
-                    cookiename: "cto_test"
-                }
-            }]
+             bidder: 'c1x',
+             params: {
+               endpoint: 'http://mymac.c1exchange.com:9000/bid',
+               site: 'pubdemo.c1exchange.com'
+             }
+           }
+        ]
     },{
         code: 'div-gpt-ad-1446192128868-1',
         sizes: [[728, 90], [970, 90]],
-        bids: [{
-                bidder: 'appnexus',
-                params: {
-                   placementId: 'TO ADD'
-                }
-            },{
-                bidder: 'openx',
-                params: {
-                    pgid: 'TO ADD',
-                    unit: 'TO ADD',
-                    jstag_url : 'TO ADD'
-                }
-            },{
-                bidder: 'rubicon',
-                params: {
-                   rp_account : 'TO ADD',
-                   rp_site: 'TO ADD',
-                   rp_zonesize : 'TO ADD',
-                   rp_tracking : 'TO ADD',
-                   rp_inventory : 'TO ADD',
-                   rp_floor : '0.1'
-                }
-            },
-              {
-                bidder: 'casale',
-                params: {
-                    slotId: 'TO ADD', // number
-                    casaleUrl: 'TO ADD'
-                }
-            }]
+        bids: [
+           {
+              bidder: 'c1x',
+              params: {
+                site: 'pubdemo.c1exchange.com'
+              }
+           }
+        ]
     }];
 
     //add the adUnits
@@ -142,7 +95,7 @@
             */
             bidsBackHandler: function(bidResponses) {
                 initAdserver();
-            },
+            }
 
             /* You can specify specific `adUnitCodes` to only request bids
                for certain ad units.

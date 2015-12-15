@@ -1,5 +1,5 @@
 /* Prebid.js v0.4.0 
-Updated : 2015-11-27 */
+Updated : 2015-12-15 */
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /** @module adaptermanger */
 
@@ -309,39 +309,56 @@ var adloader = require('../adloader');
  */
 var C1XAdapter = function C1XAdapter() {
 
+    // default endpoint. Can be overridden by adding an "endpoint" property to the first param in bidder config.
+    var ENDPOINT = 'http://ht.c1exchange.com/target';
+
     function _callBids(params){
-      window.console.log('Sending bids');
-      window.console.log(params);
+
+      // serialize all the arguments and send it to C1X header bidder.
+      // example: ?site=goodsite.com&adunits=2&a1=gpt-34-banner1&a1s=[300x250]&a2=gpt-36-right-center&a2s=[300x200,300x600]
+      var bids = params.bids,
+        options = ['adunits=' + bids.length];
+
+      for (var i=0; i<bids.length; i++) {
+        options.push('a' + (i+1) + '=' + bids[i].placementCode);
+        var sizes = bids[i].sizes,
+          sizeStr = sizes.reduce(function(prev, current) { return prev + (prev === '' ? '' : ',') + current.join('x') }, '')
+
+        options.push('a' + (i+1) + 's=[' + sizeStr + ']');
+      }
+
+      var c1xEndpoint = ENDPOINT;
+
+      if (bids[0].params && bids[0].params.endpoint) {
+        c1xEndpoint = bids[0].params.endpoint;
+      }
+
+      if (bids[0].params && bids[0].params.site) {
+        options.push('site=' + bids[0].params.site);
+      }
+
+      var url = c1xEndpoint + '?' + options.join('&');
+
       var adUnitCode = params.bids[0].placementCode,
         scriptUrl = 'c1x-mock-bidder.js';
 
-      window._c1xResponse = function(data) {
-        console.log('calling bid response with data: ', data);
-        var bidObject = bidfactory.createBid(1);
-        bidObject.bidderCode = 'c1x';
-        bidObject.cpm = data.cpm;
-        bidObject.ad = data.ad;
-        bidObject.width = data.width;
-        bidObject.height = data.height;
+      window._c1xResponse = function(response) {
 
-        //send the bidResponse object to bid manager with the adUnitCode.
-        bidmanager.addBidResponse(adUnitCode, bidObject);
+        for (var i=0; i<response.length; i++) {
+          var data = response[i];
+          if (data.bid) {
+            var bidObject = bidfactory.createBid(1);
+            bidObject.bidderCode = 'c1x';
+            bidObject.cpm = data.cpm;
+            bidObject.ad = data.ad;
+            bidObject.width = data.width;
+            bidObject.height = data.height;
+            bidmanager.addBidResponse(data.adId, bidObject);
+          }
+        }
       }
 
-      adloader.loadScript(scriptUrl);
-
-      /*
-      setTimeout(function() {
-        var bidObject = bidfactory.createBid(1);
-        bidObject.bidderCode = 'c1x';
-        bidObject.cpm = 1.50;
-        bidObject.ad = '<div><img src="http://c1x.s3.amazonaws.com/ads/house/banner300x250/c1x-ad2.jpg"></div>';
-        bidObject.width = 300;
-        bidObject.height = 250;
-
-        //send the bidResponse object to bid manager with the adUnitCode.
-        bidmanager.addBidResponse(adUnitCode, bidObject);
-      }, 300); */
+      adloader.loadScript(url);
     }
 
     // Export the callBids function, so that prebid.js can execute this function
