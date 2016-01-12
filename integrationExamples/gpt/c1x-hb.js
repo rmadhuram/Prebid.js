@@ -69,10 +69,7 @@
         sizes: [[728, 90], [970, 90]],
         bids: [
            {
-              bidder: 'c1x',
-              params: {
-                site: 'pubdemo.c1exchange.com'
-              }
+              bidder: 'c1x'
            }
         ]
     }];

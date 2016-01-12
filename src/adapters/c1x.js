@@ -32,6 +32,8 @@ var C1XAdapter = function C1XAdapter() {
         options.push('a' + (i+1) + 's=[' + sizeStr + ']');
       }
 
+      options.push('rnd=' + new Date().getTime());
+
       var c1xEndpoint = ENDPOINT;
 
       if (bids[0].params && bids[0].params.endpoint) {
@@ -43,9 +45,6 @@ var C1XAdapter = function C1XAdapter() {
       }
 
       var url = c1xEndpoint + '?' + options.join('&');
-
-      var adUnitCode = params.bids[0].placementCode,
-        scriptUrl = 'c1x-mock-bidder.js';
 
       window._c1xResponse = function(response) {
 
