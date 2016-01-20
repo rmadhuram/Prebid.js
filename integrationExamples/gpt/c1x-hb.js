@@ -53,19 +53,33 @@
 
         */
 	   var adUnits = [{
-        code: 'div-gpt-ad-1446192128868-0',
+        code: 'div-gpt-ad-1452803713122-0',
         sizes: [[300, 250]],
         bids: [
            {
              bidder: 'c1x',
              params: {
-               endpoint: 'http://mymac.c1exchange.com:9000/bid',
+               endpoint: 'http://pubdemo.c1exchange.com:9000/bid',
                site: 'pubdemo.c1exchange.com'
              }
+           },
+           {
+            bidder: 'c1x-criteo',
+            params: {
+              cpm: 120.00,
+              nid: '4916',
+              zoneMap: {
+                'SEA300250':  329125,
+                'SEA300600':  342628,
+                'SEA160600':  342629,
+                'SEA72890' :  342630,
+                'SEA32050' :  342631
+              }
+            }
            }
         ]
     },{
-        code: 'div-gpt-ad-1446192128868-1',
+        code: 'div-gpt-ad-1452803713122-1',
         sizes: [[728, 90], [970, 90]],
         bids: [
            {

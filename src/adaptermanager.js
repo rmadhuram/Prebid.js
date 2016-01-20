@@ -8,6 +8,7 @@ var CriteoAdapter = require('./adapters/criteo');
 var YieldbotAdapter = require('./adapters/yieldbot');
 var Casale = require('./adapters/casale');
 var C1X = require('./adapters/c1x');
+var C1XCriteo = require('./adapters/c1x-criteo');
 var bidmanager = require('./bidmanager.js');
 var utils = require('./utils.js');
 var CONSTANTS = require('./constants.json');
@@ -55,3 +56,5 @@ this.registerBidAdapter(CriteoAdapter(), 'criteo');
 this.registerBidAdapter(YieldbotAdapter(), 'yieldbot');
 this.registerBidAdapter(Casale(), 'casale');
 this.registerBidAdapter(C1X(), 'c1x');
+this.registerBidAdapter(C1XCriteo(), 'c1x-criteo');
+
