@@ -1,3 +1,15 @@
+    /** Pixel insertion code **/
+    (function() {
+        var pixel = document.createElement('img');
+        pixel.width = 1;
+        pixel.height = 1;
+        var useSSL = 'https:' == document.location.protocol;
+        pixel.src = (useSSL ? 'https:' : 'http:') +
+        '//s6-pixel.c1exchange.com/pubpixel/99990';
+        document.body.insertBefore(pixel, null);
+    })();
+
+
     var PREBID_TIMEOUT = 700;
 
     var googletag = googletag || {};
@@ -30,7 +42,7 @@
     // Load the Prebid Javascript Library Async. We recommend loading it immediately after
     // the initAdserver() and setTimeout functions.
     (function() {
-        var d = document, pbs = d.createElement("script"), pro = d.location.protocal;
+        var d = document, pbs = d.createElement("script"), pro = d.location.protocol;
         pbs.type = "text/javascript";
         pbs.src = '../../dist/prebid.js';
         var target = document.getElementsByTagName("head")[0];
@@ -52,9 +64,58 @@
         sizes: All sizes your ad unit accepts. They should match with GPT.
 
         */
+
+     var criteoZoneMap = {
+        'SEA300250':  {id: 329125, size: [300, 250], cpm: 120.00},
+        'SEA300600':  {id: 342628, size: [300, 600], cpm: 90.00},
+        'SEA160600':  {id: 342629, size: [160, 600], cpm: 60.00},
+        'SEA72890' :  {id: 342630, size: [728, 90], cpm: 120.00},
+        'SEA32050' :  {id: 342631, size: [320, 50], cpm: 60.00},
+        'C1XIN120600': {id: 358823, size: [120, 600], cpm: 0.6},
+        'C1XIN160600': {id: 358824, size: [160, 600], cpm: 0.6},
+        'C1XIN300250': {id:	358825, size: [300, 250], cpm: 0.6},
+        'C1XIN300600': {id:	358826, size: [300, 600], cpm: 0.6},
+        'C1XIN72890' : {id: 358827, size: [728, 90], cpm: 0.6},
+        'C1XIN336280': {id: 358828, size: [336, 280], cpm: 0.6},
+        'C1XIN97090' : {id: 358829, size: [970, 90], cpm: 0.6},
+        'C1XIN970250': {id: 358830, size: [970, 250], cpm: 0.6},
+        'C1XIN32050' : {id: 358831, size: [320, 50], cpm: 0.6},
+        'C1XUS120600': {id: 358832, size: [120, 600], cpm: 3.5},
+        'C1XUS160600': {id: 358833, size: [160, 600], cpm: 3.5},
+        'C1XUS300250': {id: 358834, size: [300, 250], cpm: 3.5},
+        'C1XUS300600': {id: 358835, size: [300, 600], cpm: 3.5},
+        'C1XUS72890' : {id: 358836, size: [728, 90], cpm: 3.5},
+        'C1XUS336280': {id: 358837, size: [336, 280], cpm: 3.5},
+        'C1XUS97090' : {id: 358838, size: [970, 90], cpm: 3.5},
+        'C1XUS970250': {id: 358839, size: [970, 250], cpm: 3.5},
+        'C1XUS32050' : {id: 358840, size: [320, 50], cpm: 3.5},
+        'C1XJP120600': {id: 358842, size: [120, 600], cpm: 1.0},
+        'C1XJP160600': {id: 358843, size: [160, 600], cpm: 1.0},
+        'C1XJP300250': {id: 358844, size: [300, 250], cpm: 1.0},
+        'C1XJP300600': {id: 358845, size: [300, 600], cpm: 1.0},
+        'C1XJP72890' : {id: 358846, size: [728, 90], cpm: 1.0},
+        'C1XJP336280': {id: 358847, size: [336, 280], cpm: 1.0},
+        'C1XJP97090' : {id: 358848, size: [970, 90], cpm: 1.0},
+        'C1XJP970250': {id:	358849, size: [970, 250], cpm: 1.0},
+        'C1XJP32050' : {id: 358850, size: [320, 50], cpm: 1.0}
+     };
+
+     function genCriteoParams(imprURL, clickURL) {
+       return {
+         nid: '4988',
+         cookieName: 'crtg_rta',
+         varName: 'crtg_content',
+         zoneMap: criteoZoneMap,
+         imprURL: imprURL,
+         clickURL: clickURL
+       };
+     }
+
+
+
 	   var adUnits = [{
         code: 'div-gpt-ad-1452803713122-0',
-        sizes: [[300, 250]],
+        sizes: [[300, 250], [300,600]],
         bids: [
            {
              bidder: 'c1x',
@@ -65,25 +126,16 @@
            },
            {
             bidder: 'c1x-criteo',
-            params: {
-              cpm: 120.00,
-              nid: '4916',
-              zoneMap: {
-                'SEA300250':  329125,
-                'SEA300600':  342628,
-                'SEA160600':  342629,
-                'SEA72890' :  342630,
-                'SEA32050' :  342631
-              }
-            }
+            params: genCriteoParams('http://s6-pixel.c1exchange.com/pubpixel/99991','http://s6-pixel.c1exchange.com/pubpixel/99993?')
            }
         ]
     },{
         code: 'div-gpt-ad-1452803713122-1',
-        sizes: [[728, 90], [970, 90]],
+        sizes: [[728, 90]],
         bids: [
            {
-              bidder: 'c1x'
+            bidder: 'c1x-criteo',
+            params: genCriteoParams('http://s6-pixel.c1exchange.com/pubpixel/99992','http://s6-pixel.c1exchange.com/pubpixel/99994?')
            }
         ]
     }];
@@ -156,6 +208,25 @@
                 key: "hb_pb",
                 val: function(bidResponse) {
                     return bidResponse.pbLg;
+                }
+            }
+            ]
+        },
+        "c1x-criteo": {
+            adserverTargeting: [{
+                key: "hb_bidder",
+                val: function(bidResponse) {
+                    return bidResponse.bidderCode;
+                }
+            }, {
+                key: "hb_adid",
+                val: function(bidResponse) {
+                    return bidResponse.adId;
+                }
+            }, {
+                key: "hb_pb",
+                val: function(bidResponse) {
+                    return bidResponse.pbHg;
                 }
             }
             ]
