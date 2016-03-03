@@ -141,6 +141,10 @@ var C1XCriteoAdapter = function C1XCriteoAdapter() {
           var showAdCode = canShowAd(adunitSizes, window[crtg_varname]),
             bidObject = null;
 
+          pbjs.criteo = {
+            response: window[crtg_varname]
+          };
+
           if (showAdCode) {
             var zoneMapping = zoneMappings[showAdCode],
               zoneId = zoneMapping.id,
