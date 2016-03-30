@@ -6,6 +6,7 @@ var adloader = require('../adloader');
 
 /**
  * Adapter for requesting bids from C1X header tag server.
+ * v0.2 (c) C1X Inc., 2016
  *
  * @param {Object} options - Configuration options for C1X
  *
@@ -15,25 +16,37 @@ var adloader = require('../adloader');
 var C1XAdapter = function C1XAdapter() {
 
     // default endpoint. Can be overridden by adding an "endpoint" property to the first param in bidder config.
-    var ENDPOINT = 'http://ht.c1exchange.com/ht',
+    var ENDPOINT = 'http://ht.c1exchange.com:8080/ht',
       PIXEL_ENDPOINT = '//px.c1exchange.com/pubpixel/',
       PIXEL_FIRE_DELAY = 3000;
 
-    function injectAudiencePixel() {
+    function getSettings(key) {
+      var pbjs = window.pbjs;
       if (pbjs && pbjs.bidderSettings) {
         var c1xSettings = pbjs.bidderSettings['c1x'];
-        if (c1xSettings && c1xSettings.pixelId) {
-          window.setTimeout(function() {
-            var pixel = document.createElement('img');
-            pixel.width = 1;
-            pixel.height = 1;
-            var useSSL = 'https:' == document.location.protocol;
-            pixel.src = (useSSL ? 'https:' : 'http:') +
-              PIXEL_ENDPOINT + c1xSettings.pixelId;
-
-            document.body.insertBefore(pixel, null);
-          }, PIXEL_FIRE_DELAY);
+        if (c1xSettings) {
+          return c1xSettings[key];
         }
+      }
+
+      return null;
+    }
+
+    // inject the audience pixel only if pbjs.bidderSettings['c1x'].pixelId is set.
+    function injectAudiencePixel() {
+      var pixelId = getSettings('pixelId');
+
+      if (pixelId) {
+        window.setTimeout(function() {
+          var pixel = document.createElement('img');
+          pixel.width = 1;
+          pixel.height = 1;
+          var useSSL = 'https:' == document.location.protocol;
+          pixel.src = (useSSL ? 'https:' : 'http:') +
+            PIXEL_ENDPOINT + pixelId;
+
+          document.body.insertBefore(pixel, null);
+        }, PIXEL_FIRE_DELAY);
       }
     }
 
@@ -43,8 +56,17 @@ var C1XAdapter = function C1XAdapter() {
 
       // serialize all the arguments and send it to C1X header bidder.
       // example: ?site=goodsite.com&adunits=2&a1=gpt-34-banner1&a1s=[300x250]&a2=gpt-36-right-center&a2s=[300x200,300x600]
+
+      var siteId = getSettings('siteId');
+      if (!siteId) {
+        console.log('c1x: error - no site id supplied!');
+        return;
+      }
+
       var bids = params.bids,
         options = ['adunits=' + bids.length];
+
+      options.push('site=' + siteId);
 
       for (var i=0; i<bids.length; i++) {
         options.push('a' + (i+1) + '=' + bids[i].placementCode);
@@ -58,12 +80,12 @@ var C1XAdapter = function C1XAdapter() {
 
       var c1xEndpoint = ENDPOINT;
 
-      if (bids[0].params && bids[0].params.endpoint) {
-        c1xEndpoint = bids[0].params.endpoint;
+      if (getSettings('endpoint')) {
+        c1xEndpoint = getSettings('endpoint');
       }
 
-      if (bids[0].params && bids[0].params.site) {
-        options.push('site=' + bids[0].params.site);
+      if (getSettings('dspid')) {
+        options.push('dspid', getSettings('dspid'));
       }
 
       var url = c1xEndpoint + '?' + options.join('&');
