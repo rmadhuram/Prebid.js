@@ -85,7 +85,7 @@ var C1XAdapter = function C1XAdapter() {
       }
 
       if (getSettings('dspid')) {
-        options.push('dspid', getSettings('dspid'));
+        options.push('dspid=' + getSettings('dspid'));
       }
 
       var url = c1xEndpoint + '?' + options.join('&');

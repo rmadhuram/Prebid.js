@@ -4,10 +4,63 @@
 
 var express = require('express'),
   http = require('http'),
-  cookieParser = require('cookie-parser')
+  cookieParser = require('cookie-parser'),
+  htSim = require('./ht-simulator');
 
 var app = module.exports = express();
-app.use(cookieParser())
+app.use(cookieParser());
+
+
+app.get('/ht', function(req, res) {
+  htSim.serveBid(req).then(function(data) {
+    res.send('_c1xResponse(' + JSON.stringify(data) + ')');
+  }, function(err) {
+    res.send([]);
+  });
+});
+
+function getConfigFromCookie(req) {
+
+}
+
+app.get('/config', function(req, res) {
+  var config = {
+    bidRatio: 1.0,  // bid or not 50/50
+    pMin: 1.0,
+    pMax: 4.0,
+    respDelay: 0
+  };
+
+  if (req.param('bidRatio')) {
+    config.bidRatio = +req.param('bidRatio');
+  }
+
+  if (req.param('pMin')) {
+    config.pMin = +req.param('pMin');
+  }
+
+  if (req.param('pMax')) {
+    config.pMax = +req.param('pMax');
+  }
+
+  res.cookie('config', JSON.stringify(config));
+  res.json(config);
+});
+
+app.get('/config/get', function(req, res) {
+  var config = {};
+  if (req.cookies.config) {
+    config = JSON.parse(req.cookies.config);
+  }
+
+  res.json(config);
+});
+
+app.get('/config/clear', function(req, res) {
+  res.clearCookie('config');
+  res.json({});
+});
+
 
 app.get('/status', function(req, res) {
   var shouldBid = true;
@@ -82,6 +135,21 @@ app.get('/bid', function(req, res) {
 
   res.setHeader('content-type', 'text/plain');
   res.send('_c1xResponse(' + JSON.stringify(resp) + ')');
+});
+
+app.get('/ad', function(req, res) {
+  var w = req.param('w'),
+    h = req.param('h'),
+    fs = require('fs');
+
+  fs.readFile('./ad-template.html', 'utf8', function(err, contents) {
+    res.setHeader('content-type', 'text/javascript');
+    contents = contents.replace(/{{w}}/g, w);
+    contents = contents.replace(/{{h}}/g, h);
+    contents = contents.replace(/{{bgurl}}/g, 'http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/wov.png');
+
+    res.send(contents);
+  });
 });
 
 var server = http.createServer(app);

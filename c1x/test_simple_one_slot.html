@@ -65,7 +65,23 @@
           'c1x': {
             pixelId: 99999,
             siteId: 1,
-            endpoint: 'http://staging-ht.c1exchange.com/ht'
+            endpoint: 'http://ht-integration.c1exchange.com:9000/ht',
+            adserverTargeting: [{
+              key: "hb_bidder",
+              val: function(bidResponse) {
+                  return bidResponse.bidderCode;
+              }
+            }, {
+              key: "hb_adid",
+              val: function(bidResponse) {
+                  return bidResponse.adId;
+              }
+            }, {
+              key: "hb_pb",
+              val: function(bidResponse) {
+                  return bidResponse.pbLg;
+              }
+            }]
           }
         };
 
