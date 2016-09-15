@@ -1,26 +1,82 @@
-describe("Publisher API", function() {
-  var assert = chai.assert;
+var assert = require('chai').assert;
+var prebid = require('../../src/prebid');
 
-  describe("has api", function() {
+describe('Publisher API', function () {
+  // var assert = chai.assert;
 
-    it('has api of command queue', function() {
-      assert.isObject(pbjs);
-      assert.isFunction(pbjs.que.push);
+  describe('api of command queue', function () {
+
+    it('should have a global variable $$PREBID_GLOBAL$$', function () {
+      assert.isObject($$PREBID_GLOBAL$$);
     });
 
-    it('has function',function(){
-      assert.isFunction(pbjs.getAdserverTargeting);
-      assert.isFunction(pbjs.getAdserverTargetingForAdUnitCode);
-      assert.isFunction(pbjs.getBidResponses);
-      assert.isFunction(pbjs.getBidResponsesForAdUnitCode);
-      assert.isFunction(pbjs.setTargetingForGPTAsync);
-      assert.isFunction(pbjs.allBidsAvailable);
-      assert.isFunction(pbjs.renderAd);
-      assert.isFunction(pbjs.removeAdUnit);
-      assert.isFunction(pbjs.requestBids);      
-      assert.isFunction(pbjs.addAdUnits);
-      assert.isFunction(pbjs.addCallback);
-      assert.isFunction(pbjs.removeCallback);   
-   });
+    it('should have a global variable $$PREBID_GLOBAL$$.que as an array', function () {
+      assert.isArray($$PREBID_GLOBAL$$.que);
+    });
+
+    it('should have $$PREBID_GLOBAL$$.que.push function', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.que.push);
+    });
   });
+
+  describe('has function', function () {
+
+    it('should have function $$PREBID_GLOBAL$$.getAdserverTargeting', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.getAdserverTargeting);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.getAdserverTargetingForAdUnitCode', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.getAdserverTargetingForAdUnitCode);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.getBidResponses', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.getBidResponses);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.getBidResponsesForAdUnitCode', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.getBidResponsesForAdUnitCode);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.setTargetingForGPTAsync', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.setTargetingForGPTAsync);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.allBidsAvailable', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.allBidsAvailable);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.renderAd', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.renderAd);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.removeAdUnit', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.removeAdUnit);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.requestBids', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.requestBids);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.addAdUnits', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.addAdUnits);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.addCallback', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.addCallback);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.removeCallback', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.removeCallback);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.aliasBidder', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.aliasBidder);
+    });
+
+    it('should have function $$PREBID_GLOBAL$$.getAllWinningBids', function () {
+      assert.isFunction($$PREBID_GLOBAL$$.getAllWinningBids);
+    });
+
+  });
+
 });
