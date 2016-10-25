@@ -6,7 +6,7 @@ var adloader = require('../adloader');
 
 /**
  * Adapter for requesting bids from C1X header tag server.
- * v0.2 (c) C1X Inc., 2016
+ * v0.3 (c) C1X Inc., 2016
  *
  * @param {Object} options - Configuration options for C1X
  *
@@ -71,12 +71,23 @@ var C1XAdapter = function C1XAdapter() {
       for (var i=0; i<bids.length; i++) {
         options.push('a' + (i+1) + '=' + bids[i].placementCode);
         var sizes = bids[i].sizes,
-          sizeStr = sizes.reduce(function(prev, current) { return prev + (prev === '' ? '' : ',') + current.join('x') }, '')
+          sizeStr = sizes.reduce(function(prev, current) { return prev + (prev === '' ? '' : ',') + current.join('x') }, '');
+
+        // send floor price if the setting is available.
+        var floorPriceMap = getSettings('floorPriceMap');
+        console.log('floor price map: ', floorPriceMap);
+        console.log('size: ' + sizes[0]);
+        if (floorPriceMap) {
+          var adUnitSize = sizes[0].join('x');
+          if (adUnitSize in floorPriceMap) {
+            options.push('a' + (i+1) + 'p=' + floorPriceMap[adUnitSize]);
+          }
+        }
 
         options.push('a' + (i+1) + 's=[' + sizeStr + ']');
       }
 
-      options.push('rnd=' + new Date().getTime());
+      options.push('rnd=' + new Date().getTime());  // cache busting
 
       var c1xEndpoint = ENDPOINT;
 

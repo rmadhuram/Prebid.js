@@ -37,7 +37,7 @@
       (function() {
         var d = document, pbs = d.createElement("script"), pro = d.location.protocol;
         pbs.type = "text/javascript";
-        pbs.src = './prebid.js';
+        pbs.src = '../dist/prebid.js';
         var target = document.getElementsByTagName("head")[0];
         target.insertBefore(pbs, target.firstChild);
       })();
@@ -66,6 +66,11 @@
             pixelId: 99999,
             siteId: 1,
             endpoint: 'http://ht-integration.c1exchange.com:9000/ht',
+            floorPriceMap: {
+              '300x250': 4.00,
+              '728x90': 3.50,
+              '300x600': 6.00
+            },
             adserverTargeting: [{
               key: "hb_bidder",
               val: function(bidResponse) {
