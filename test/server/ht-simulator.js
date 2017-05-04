@@ -48,7 +48,15 @@ exports.serveBid = function(req) {
       shouldBid = true;
     }
 
-    var price = config.pMin + Math.random() * (config.pMax - config.pMin);
+    var floorPrice = config.pMin,
+        maxPrice = config.pMax;
+    //
+    if(req.param('a' + (i+1) + 'p') && !isNaN(req.param('a' + (i+1) + 'p'))) {
+      floorPrice = +req.param('a' + (i+1) + 'p');
+      maxPrice = floorPrice + 4;
+    }
+
+    var price = floorPrice + Math.random() * (maxPrice - floorPrice);
     price = Math.floor(price * 100)/100;
 
     var bid = {};
@@ -64,7 +72,7 @@ exports.serveBid = function(req) {
         adId: adunit.adId,
         bid: true,
         cpm: price,
-        ad: '<div><a target="_new" href="http://c1exchange.com"><img src="https://placeholdit.imgix.net/~text?txtsize=38&txt=' + txt + '&w=' + w + '&h=' + h + '&txttrack=0"></a></div>',
+        ad: '<script>document.write(\'' + '<div><a target="_new" href="http://c1exchange.com"><img src="https://placeholdit.imgix.net/~text?txtsize=38&txt=' + txt + '&w=' + w + '&h=' + h + '&txttrack=0"></a></div>\')</script>',
         width: w,
         height: h
       };
