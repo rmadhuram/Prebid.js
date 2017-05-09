@@ -61,18 +61,29 @@ exports.serveBid = function(req) {
 
     var bid = {};
     if (shouldBid) {
+      var adType = req.param('a' + (i + 1) + 't'),
+          creative = '';
+
       // pick an ad size to deliver creative.
       var sizes = adunit.sizes;
       var pickedSize = sizes[Math.floor(Math.random() * sizes.length)].split('x'),
-        w = pickedSize[0],
-        h = pickedSize[1],
-        txt = encodeURIComponent('C1X Ad ' + w + 'x' + h);
+          w = pickedSize[0],
+          h = pickedSize[1];
+
+      if (adType && adType === 'adap') {
+        var fs = require('fs'),
+            path = require('path');
+            creative = fs.readFileSync(path.join(__dirname, 'assets/adaptive-genesis.html'), 'utf-8');
+      } else {
+        var txt = encodeURIComponent('C1X Ad ' + w + 'x' + h),
+            creative = '<script>document.write(\'' + '<div><a target="_new" href="http://c1exchange.com"><img src="https://placeholdit.imgix.net/~text?txtsize=38&txt=' + txt + '&w=' + w + '&h=' + h + '&txttrack=0"></a></div>\')</script>';
+      }
 
       bid = {
         adId: adunit.adId,
         bid: true,
         cpm: price,
-        ad: '<script>document.write(\'' + '<div><a target="_new" href="http://c1exchange.com"><img src="https://placeholdit.imgix.net/~text?txtsize=38&txt=' + txt + '&w=' + w + '&h=' + h + '&txttrack=0"></a></div>\')</script>',
+        ad: creative,
         width: w,
         height: h
       };
